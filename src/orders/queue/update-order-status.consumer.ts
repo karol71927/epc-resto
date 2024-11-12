@@ -2,9 +2,11 @@ import { InjectQueue, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { Job, Queue } from 'bullmq';
 import { CreateRequestContext, MikroORM } from '@mikro-orm/core';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UpdateOrderStatusJob } from './update-order-status.job';
 import { UPDATE_ORDER_STATUS_QUEUE } from './update-order-status.queue';
 import { Order, OrderStatus } from '../entity/order.entity';
+import { OrderStatusUpdatedEvent } from '../event/order-status.updated.event';
 
 @Processor(UPDATE_ORDER_STATUS_QUEUE)
 export class UpdateOrderStatusConsumer extends WorkerHost {
@@ -14,6 +16,7 @@ export class UpdateOrderStatusConsumer extends WorkerHost {
     private readonly orm: MikroORM,
     @InjectQueue(UPDATE_ORDER_STATUS_QUEUE)
     private readonly updateOrderStatusQueue: Queue,
+    private readonly eventEmitter: EventEmitter2,
   ) {
     super();
   }
@@ -45,5 +48,10 @@ export class UpdateOrderStatusConsumer extends WorkerHost {
         new UpdateOrderStatusJob(order.id),
       );
     }
+
+    this.eventEmitter.emit(
+      OrderStatusUpdatedEvent.name,
+      new OrderStatusUpdatedEvent(order.token, order.status),
+    );
   }
 }

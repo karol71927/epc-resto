@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from 'nestjs-config';
 import { resolve } from 'path';
 import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MigrationLifecycle } from './database/migration.lifecycle';
 import { OrdersModule } from '@orders/orders.module';
 import { MealsModule } from '@meals/meals.module';
@@ -32,6 +33,7 @@ import { ConfigNames } from '@config/config-names.enum';
     OrdersModule,
     MealsModule,
     CategoriesModule,
+    EventEmitterModule.forRoot(),
   ],
   providers: [MigrationLifecycle],
 })

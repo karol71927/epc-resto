@@ -4,7 +4,9 @@ import { BullModule } from '@nestjs/bullmq';
 import { Order } from './entity/order.entity';
 import { UPDATE_ORDER_STATUS_QUEUE } from './queue/update-order-status.queue';
 import { UpdateOrderStatusConsumer } from './queue/update-order-status.consumer';
+import { OrderStatusGateway } from './ws/order-status.gateway';
 import { OrdersService } from './service/orders.service';
+import { OrderStatusService } from './ws/order-status.service';
 import { OrdersController } from './http/controller/orders.controller';
 
 @Module({
@@ -27,6 +29,11 @@ import { OrdersController } from './http/controller/orders.controller';
     }),
   ],
   controllers: [OrdersController],
-  providers: [OrdersService, UpdateOrderStatusConsumer],
+  providers: [
+    OrdersService,
+    UpdateOrderStatusConsumer,
+    OrderStatusService,
+    OrderStatusGateway,
+  ],
 })
 export class OrdersModule {}
